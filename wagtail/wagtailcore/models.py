@@ -59,6 +59,7 @@ class SiteManager(models.Manager):
 class Site(models.Model):
     hostname = models.CharField(verbose_name=_('Hostname'), max_length=255, db_index=True)
     port = models.IntegerField(verbose_name=_('Port'), default=80, help_text=_("Set this to something other than 80 if you need a specific port number to appear in URLs (e.g. development on port 8000). Does not affect request handling (so port forwarding still works)."))
+    wsgi_port = models.IntegerField(verbose_name=_('Port'), default=80, help_text=_("The port that is configured in nginx configuration for the site."))
     root_page = models.ForeignKey('Page', verbose_name=_('Root page'), related_name='sites_rooted_here')
     is_default_site = models.BooleanField(verbose_name=_('Is default site'), default=False, help_text=_("If true, this site will handle requests for all other hostnames that do not have a site entry of their own"))
 
@@ -96,7 +97,7 @@ class Site(models.Model):
             except Site.MultipleObjectsReturned:
                 # as there were more than one, try matching by port too
                 port = request.META['SERVER_PORT']  # KeyError here goes to the final except clause
-                return Site.objects.get(hostname=hostname, port=int(port))  # Site.DoesNotExist here goes to the final except clause
+                return Site.objects.get(hostname=hostname, wsgi_port=int(port))  # Site.DoesNotExist here goes to the final except clause
         except (Site.DoesNotExist, KeyError):
             # If no matching site exists, or request does not specify an HTTP_HOST (which
             # will often be the case for the Django test client), look for a catch-all Site.
