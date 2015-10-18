@@ -59,7 +59,7 @@ class SiteManager(models.Manager):
 class Site(models.Model):
     hostname = models.CharField(verbose_name=_('Hostname'), max_length=255, db_index=True)
     port = models.IntegerField(verbose_name=_('Port'), default=80, help_text=_("Set this to something other than 80 if you need a specific port number to appear in URLs (e.g. development on port 8000). Does not affect request handling (so port forwarding still works)."))
-    wsgi_port = models.IntegerField(verbose_name=_('Port'), default=80, help_text=_("The port that is configured in nginx configuration for the site."))
+    wsgi_port = models.IntegerField(verbose_name=_('WSGI port'), default=80, help_text=_("The port that is configured in nginx configuration for the site."))
     root_page = models.ForeignKey('Page', verbose_name=_('Root page'), related_name='sites_rooted_here')
     is_default_site = models.BooleanField(verbose_name=_('Is default site'), default=False, help_text=_("If true, this site will handle requests for all other hostnames that do not have a site entry of their own"))
 
